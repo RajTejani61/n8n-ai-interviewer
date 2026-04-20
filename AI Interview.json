@@ -1,0 +1,1038 @@
+{
+  "name": "AI Interview",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Interview",
+        "formDescription": "Welcome to UniLab Solution, My self Alex and i will take your interview. Please fill below details correctly.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "John Doe"
+            },
+            {
+              "fieldLabel": "Age",
+              "placeholder": "20"
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "placeholder": "abc@gmail.com"
+            },
+            {
+              "fieldLabel": "Role",
+              "fieldType": "checkbox",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Full Stack Developer"
+                  },
+                  {
+                    "option": "Web Designer"
+                  },
+                  {
+                    "option": "Frontend Developer"
+                  },
+                  {
+                    "option": "Backend Developer"
+                  },
+                  {
+                    "option": "QA Tester"
+                  },
+                  {
+                    "option": "AI Engineer"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Experience",
+              "fieldType": "number",
+              "placeholder": "e.g. - 0, 1, 2",
+              "defaultValue": "0"
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Continue"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        64,
+        368
+      ],
+      "id": "32a0ec44-5129-448c-87c2-032d43cd3a7f",
+      "name": "On form submission",
+      "webhookId": "94904fcf-9407-4135-be46-6c97b129174e"
+    },
+    {
+      "parameters": {
+        "model": "command-r-08-2024",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatCohere",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        992
+      ],
+      "id": "a2581284-e610-4a99-b428-87092b31bd6e",
+      "name": "Cohere Chat Model",
+      "credentials": {
+        "cohereApi": {
+          "id": "xOADR5guD8uTCUfH",
+          "name": "rajworkprofile"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"question\": { \"type\": \"string\" },\n    \"answer\": { \"type\": \"string\" }\n  },\n  \"required\": [\"question\", \"answer\"]\n}",
+        "autoFix": true,
+        "customizeRetryPrompt": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1696,
+        1008
+      ],
+      "id": "0aa314a3-3eba-47ea-b1e7-3c9317399191",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3-32b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        992
+      ],
+      "id": "8768aab8-8a06-427d-9628-b95ba53a9cdc",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "gDayNiqsaHDDiD64",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1216,
+        368
+      ],
+      "id": "c2403732-d6b0-4518-bb96-0d06a2929389",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "user_session_1",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1520,
+        1168
+      ],
+      "id": "a7f89c2a-9f05-4a49-8069-771fde7ade91",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2464,
+        352
+      ],
+      "id": "da9ce426-2dc3-4cdc-8ff7-6a9e5f283d0c",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0372f2c4-b891-4e6e-810e-5b82bc3baade",
+              "leftValue": "={{ $('Question Generator').item.json.output }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2208,
+        640
+      ],
+      "id": "eee84e8f-6339-4916-a605-09d0154b465b",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        2880,
+        960
+      ],
+      "id": "a7776dc8-930b-430a-a273-197887680dc5",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "gDayNiqsaHDDiD64",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "documentId": {
+          "__rl": true,
+          "value": "1x-qm38Og4i4IrZfZI0tfAnc7rAinMoe6OkXnZuyw628",
+          "mode": "list",
+          "cachedResultName": "Interview",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1x-qm38Og4i4IrZfZI0tfAnc7rAinMoe6OkXnZuyw628/edit?usp=drivesdk"
+        },
+        "title": "={{ $('On form submission').item.json.Name }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        288,
+        368
+      ],
+      "id": "c8b6ed2d-4e39-4430-ac5a-022922378be3",
+      "name": "Create sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bzATXWflah5Wsje9",
+          "name": "rajworkprofile"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return Array.from({length: 10}, (_, i) => ({json: {question_number: i + 1}}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        368
+      ],
+      "id": "cde54301-12d5-4730-8e19-80cf671ea54e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1443bb37-f0fa-4a6d-9775-5a52698feac8",
+              "name": "SheetID",
+              "value": "={{ $json.sheetId }}",
+              "type": "number"
+            },
+            {
+              "id": "7b433e9f-f620-45f9-99cc-a59ba1b58a84",
+              "name": "Question",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "c07de177-c081-4d51-9c62-5eeec2ec5287",
+              "name": "AIAnswer",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "dc3c013d-c6b9-42c8-b90b-635d347159f6",
+              "name": "UserAnswer",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "106f06fb-1585-4692-b162-59edf39fc276",
+              "name": "Evaluation",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "c6656753-d4e7-4418-92b0-2424e44f759e",
+              "name": "Name",
+              "value": "={{ $('On form submission').item.json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "346413f4-42c0-4621-ac68-ebc8a9eca152",
+              "name": "Age",
+              "value": "={{ $('On form submission').item.json.Age }}",
+              "type": "string"
+            },
+            {
+              "id": "e84d9ef7-9c7f-43ff-9359-ac9627097588",
+              "name": "Email",
+              "value": "={{ $('On form submission').item.json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "c3710a7c-71fa-4486-9f08-bb120b0ed8cd",
+              "name": "Role",
+              "value": "={{ $('On form submission').item.json.Role }}",
+              "type": "array"
+            },
+            {
+              "id": "4b4b2d05-4cdb-4b3f-be1f-269daf050825",
+              "name": "Experience",
+              "value": "={{ $('On form submission').item.json.Experience }}",
+              "type": "number"
+            },
+            {
+              "id": "137f1f8c-af68-4673-8fdd-20c68f91c77c",
+              "name": "Date/Time",
+              "value": "={{ $('On form submission').item.json.submittedAt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        368
+      ],
+      "id": "a8d26f1c-15ca-4582-9d48-e210f8a52120",
+      "name": "ExtractInfo"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1x-qm38Og4i4IrZfZI0tfAnc7rAinMoe6OkXnZuyw628",
+          "mode": "list",
+          "cachedResultName": "Interview",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1x-qm38Og4i4IrZfZI0tfAnc7rAinMoe6OkXnZuyw628/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $json.SheetID }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "SheetID": "={{ $('ExtractInfo').item.json.SheetID }}",
+            "Name": "={{ $('ExtractInfo').item.json.Name }}",
+            "Age": "={{ $('ExtractInfo').item.json.Age }}",
+            "Email": "={{ $('ExtractInfo').item.json.Email }}",
+            "Role": "={{ $('ExtractInfo').item.json.Role }}",
+            "Experience": "={{ $('ExtractInfo').item.json.Experience }}",
+            "Date/Time": "={{ $('ExtractInfo').item.json['Date/Time'] }}",
+            "Question": "={{ $('ExtractInfo').item.json.Question }}",
+            "AIAnswer": "={{ $('ExtractInfo').item.json.AIAnswer }}",
+            "UserAnswer": "={{ $('ExtractInfo').item.json.UserAnswer }}",
+            "Evaluation": "={{ $('ExtractInfo').item.json.Evaluation }}"
+          },
+          "matchingColumns": [
+            "SheetID"
+          ],
+          "schema": [
+            {
+              "id": "SheetID",
+              "displayName": "SheetID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Age",
+              "displayName": "Age",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Experience",
+              "displayName": "Experience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date/Time",
+              "displayName": "Date/Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Question",
+              "displayName": "Question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AIAnswer",
+              "displayName": "AIAnswer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "UserAnswer",
+              "displayName": "UserAnswer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Evaluation",
+              "displayName": "Evaluation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        368
+      ],
+      "id": "a994bf86-b90d-4900-abb7-188580cfba34",
+      "name": "UpdateUserDetails",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bzATXWflah5Wsje9",
+          "name": "rajworkprofile"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Ask small 1-2 liner questions.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=### IDENTITY\nYou are a Senior Technical Interviewer. Your only job is to provide ONE interview question and its correct answer for a candidate.\n\n### CONSTRAINTS & LOGIC\n1. DIFFICULTY SCALING: Adjust difficulty based on the current iteration (1-10):\n  - Index 1-3: EASY (Basic syntax, definitions, core tools).\n  - Index 4-6: MEDIUM (Common scenarios, debugging, library usage).\n  - Index 7-8: HARD (Architecture design, performance, security).\n  - Index 9-10: ADVANCED (Internal engine workings, scalability, complex edge cases).\n\n2. MULTI-ROLE HANDLING: If multiple roles are provided, rotate between them. Use the iteration number to pick a role.\n3. MEMORY/DEDUPLICATION: Review the \"History\" list. You are strictly forbidden from generating any question similar to those already listed in the History.\n4. EXPERIENCE LEVEL: Tailor the depth of the answer to the provided years of experience.\n\n### STRICT OUTPUT RULES\n1. DO NOT greet the user.\n2. DO NOT explain what you are doing.\n3. DO NOT say \"Here is a question\" or \"As an AI Engineer...\".\n4. DO NOT use conversational filler.\n5. ONLY output the question and the answer in the format below.\n\n### USER DATA\n- Role(s): {{ $('ExtractInfo').item.json.Role }}\n- Experience: {{ $('ExtractInfo').item.json.Experience }} years\n- Current Iteration: {{ $node[\"Loop Over Items\"].context.currentIteration + 1 }} / 10\n- History: Chcek Simple memory.\n\n### OUTPUT FORMAT\nQuestion: \"Insert the question here\"\nAnswer: \"Insert the detailed technical answer here\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1472,
+        640
+      ],
+      "id": "c509e3e7-8c69-4ef6-8154-62d98e66236c",
+      "name": "Question Generator"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d5302572-e287-452a-8ec8-b3c1ab26746c",
+              "name": "Question",
+              "value": "={{ $json.output.question }}",
+              "type": "string"
+            },
+            {
+              "id": "fe7eca00-8068-45b7-b124-68c16b912d00",
+              "name": "Answer",
+              "value": "={{ $json.output.answer }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1936,
+        640
+      ],
+      "id": "06ec9b5f-6e7d-4605-adbd-6b9d1ccbc2ee",
+      "name": "Extract Ques-Ans"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "={{ $json.Question }}",
+              "fieldType": "textarea",
+              "fieldName": "UserAns",
+              "placeholder": "Answer",
+              "requiredField": true
+            }
+          ]
+        },
+        "limitWaitTime": true,
+        "options": {
+          "formTitle": "Interview",
+          "buttonLabel": "Continue"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        2576,
+        624
+      ],
+      "id": "cda1f18b-ab94-4e74-ac83-7f3d38fea81b",
+      "name": "Show Que",
+      "webhookId": "74f4e5bf-fd62-4e4f-b625-4d0d4757f71c"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User Answer :  {{ $('Show Que').item.json.UserAns }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are expert evaluator who evaluates the answer of user with provided.\n- Your job is check user answer with below given answer and give it score between 1-10.\n- Do not exactly macth with answer, just check logic and reason that if user answer maches with real answer.\n\nRight Answer : \n{{ $('Extract Ques-Ans').item.json.Answer }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2880,
+        624
+      ],
+      "id": "d7a18a7c-f3b1-4a53-a1f3-227cf96be272",
+      "name": "Evaluation"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1x-qm38Og4i4IrZfZI0tfAnc7rAinMoe6OkXnZuyw628",
+          "mode": "list",
+          "cachedResultName": "Interview",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1x-qm38Og4i4IrZfZI0tfAnc7rAinMoe6OkXnZuyw628/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('ExtractInfo').item.json.SheetID }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "SheetID": "={{ $('Code in JavaScript').item.json.question_number }}",
+            "Question": "={{ $('SetUserResponse').item.json.Question }}",
+            "AIAnswer": "={{ $('SetUserResponse').item.json.AIAnswer }}",
+            "UserAnswer": "={{ $('SetUserResponse').item.json.UserAnswer }}",
+            "Evaluation": "={{ $('SetUserResponse').item.json.Evaluation }}",
+            "Date/Time": "={{ $('Show Que').item.json.submittedAt.split(/[-,'T']/)[3] }} \n"
+          },
+          "matchingColumns": [
+            "SheetID"
+          ],
+          "schema": [
+            {
+              "id": "SheetID",
+              "displayName": "SheetID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Question",
+              "displayName": "Question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AIAnswer",
+              "displayName": "AIAnswer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "UserAnswer",
+              "displayName": "UserAnswer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Evaluation",
+              "displayName": "Evaluation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Age",
+              "displayName": "Age",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Experience",
+              "displayName": "Experience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date/Time",
+              "displayName": "Date/Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3712,
+        656
+      ],
+      "id": "386ac4b0-7eea-4922-a6f1-b58e8e2c9846",
+      "name": "UpdateUserAnswer",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bzATXWflah5Wsje9",
+          "name": "rajworkprofile"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7605d8d5-9672-4d7a-8afc-70a9a245904b",
+              "name": "Question",
+              "value": "={{ $('Question Generator').item.json.output.question }}",
+              "type": "string"
+            },
+            {
+              "id": "b2ac3e21-c1a4-4bdb-8009-0307ba3e4f22",
+              "name": "AIAnswer",
+              "value": "={{ $('Question Generator').item.json.output.answer }}",
+              "type": "string"
+            },
+            {
+              "id": "b7a301cd-b7c5-404f-b04c-28e1a66095a7",
+              "name": "UserAnswer",
+              "value": "={{ $('Show Que').item.json.UserAns }}",
+              "type": "string"
+            },
+            {
+              "id": "ead609c5-0ef0-42cc-a837-bd004448fa60",
+              "name": "Evaluation",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3344,
+        624
+      ],
+      "id": "9cc5e6ab-f6fc-4d23-91ed-2922b25be6c8",
+      "name": "SetUserResponse"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Create sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cohere Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Question Generator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Question Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Question Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Question Generator",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Show Que",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Evaluation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create sheet": {
+      "main": [
+        [
+          {
+            "node": "ExtractInfo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExtractInfo": {
+      "main": [
+        [
+          {
+            "node": "UpdateUserDetails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateUserDetails": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Question Generator": {
+      "main": [
+        [
+          {
+            "node": "Extract Ques-Ans",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Ques-Ans": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Show Que": {
+      "main": [
+        [
+          {
+            "node": "Evaluation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluation": {
+      "main": [
+        [
+          {
+            "node": "SetUserResponse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateUserAnswer": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetUserResponse": {
+      "main": [
+        [
+          {
+            "node": "UpdateUserAnswer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "30db5d96-6a51-4125-893b-330472b8ec13",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d91cc3b16194c33f6dff089c8a33083bf56de729e35aeda72ad21735e6a97563"
+  },
+  "id": "q4RA6vymg-44teH2nz8pA",
+  "tags": []
+}
