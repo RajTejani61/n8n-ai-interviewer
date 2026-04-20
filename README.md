@@ -79,7 +79,7 @@ Before importing the workflow, ensure you have active accounts and API keys for 
 
 - **Email**: [work.raj.38@gmail.com](mailto:work.raj.38@gmail.com)
 - **Issues**: [GitHub Issues](https://github.com/RajTejani61/AI-Powered-Interview/issues)
-  [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?logo=linkedin)](https://in.linkedin.com/in/raj-tejani-5946252a4)
+- [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?logo=linkedin)](https://in.linkedin.com/in/raj-tejani-5946252a4)
 
 ---
 
